@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "saturn": { "command": "python3", "args": ["saturn_mcp.py"] }
+  }
+}
