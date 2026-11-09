@@ -1,13 +1,16 @@
-# Run: python3 test_saturn_mcp.py   (works without saturn_bt running)
+# Run: python3 tests/test_saturn_mcp.py   (works without saturn_bt running)
 import json
 import os
 import subprocess
 import sys
 
-import saturn_mcp as m
+SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")
+sys.path.insert(0, SRC)
+import saturn_mcp as m  # noqa: E402
 
 assert m.COMMAND.fullmatch("press a+b 200") and m.COMMAND.fullmatch("release all") and m.COMMAND.fullmatch("wait 10")
 assert not m.COMMAND.fullmatch("press Q") and not m.COMMAND.fullmatch("hold A 5") and not m.COMMAND.fullmatch("wait x")
+assert not m.COMMAND.fullmatch("press A+") and not m.COMMAND.fullmatch("press +A")
 assert m.send("press Q")[1] and "Invalid" in m.send("press Q")[0]
 
 reqs = [
@@ -17,8 +20,7 @@ reqs = [
     {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "status", "arguments": {}}},
     {"jsonrpc": "2.0", "id": 4, "method": "nope"},
 ]
-here = os.path.dirname(os.path.abspath(__file__))
-out = subprocess.run([sys.executable, os.path.join(here, "saturn_mcp.py")], input="\n".join(map(json.dumps, reqs)) + "\n",
+out = subprocess.run([sys.executable, os.path.join(SRC, "saturn_mcp.py")], input="\n".join(map(json.dumps, reqs)) + "\n",
                      capture_output=True, text=True, timeout=10).stdout
 res = [json.loads(line) for line in out.splitlines()]
 assert [r["id"] for r in res] == [1, 2, 3, 4], res  # no reply to the notification

@@ -13,7 +13,7 @@ import sys
 FIFO = "/run/saturn_bt.fifo"
 STATUS = "/run/saturn_bt.status"
 
-# Must stay in sync with parse() in saturn_bt.cpp.
+# Must stay in sync with parse() in bridge.hpp.
 BTN = r"(A|B|C|X|Y|Z|L|R|START|HOME|UP|DOWN|LEFT|RIGHT)"
 BTNS = rf"{BTN}(\+{BTN})*"
 COMMAND = re.compile(rf"press\s+{BTNS}(\s+\d+)?|hold\s+{BTNS}|release\s+(ALL|{BTNS})|wait\s+\d+", re.I)
