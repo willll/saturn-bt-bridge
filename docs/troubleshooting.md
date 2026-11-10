@@ -3,9 +3,9 @@
 ## saturn_bt does not start
 
 **`bind HID port: Address already in use`**
-BlueZ's input plugin still owns the HID ports. Check that `-P input` is active:
+BlueZ's input plugin still owns the HID ports. Check that `-P input,hostname` is active:
 ```sh
-ps -o args= -C bluetoothd     # should end with -P input
+ps -o args= -C bluetoothd     # should end with -P input,hostname
 ```
 If not, redo step 2 of the BlueZ setup in the [README](../README.md#one-time-bluez-setup) and restart `bluetooth`.
 
@@ -29,8 +29,10 @@ Use `sudo`, and pick the device from `ls -l /dev/input/by-id/`. `-i` is optional
    bluetoothctl show
    ```
    Expect `Alias: Wireless Controller`, `Discoverable: yes`, `Pairable: yes`, and a `Class` ending in `508`.
-   If the class is wrong, check `Class = 0x000508` is under `[General]` in `/etc/bluetooth/main.conf`
-   and restart `bluetooth`.
+   It must be exactly `0x00002508` (see README pairing step 4): with extra bits such as `0x7c2508`
+   the receiver ignores the PC. If the class is wrong, check `Class = 0x000508` is under `[General]` in `/etc/bluetooth/main.conf`
+   and restart `bluetooth`. If it ends in `10c` (laptop), BlueZ's `hostname` plugin overwrote it:
+   `bluetoothd` must run with `-P input,hostname`.
 2. Keep the `bluetoothctl` agent open (`agent NoInputNoOutput`, `default-agent`) and answer `yes` if asked.
 3. Plug the receiver into a **powered-on** Saturn, then press its pairing button. Stay within a few meters.
 4. If the receiver was paired with this PC before, remove the old pairing on the PC:
@@ -44,7 +46,8 @@ Use `sudo`, and pick the device from `ls -l /dev/input/by-id/`. `-i` is optional
 
 ## Connected, but buttons are wrong or missing
 
-The mapping from PS4 to Saturn buttons is a guess. Fix it as described in
+The mapping was checked on one receiver; others may differ. Check it with the
+[pad monitor sample](../samples/saturn-pad-monitor/README.md) and fix it as described in
 [development.md](development.md#changing-the-button-mapping).
 
 If nothing works at all, check that `saturn_bt` says `Connected.`, and try another game:

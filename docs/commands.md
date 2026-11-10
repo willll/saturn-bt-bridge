@@ -35,14 +35,14 @@ Comments are not allowed in commands: send only the command text.
 
 ### Button mapping
 
-The receiver turns PS4 buttons into Saturn buttons. Its manual does not say how,
-so the command names follow the most likely mapping:
+The receiver turns PS4 buttons into Saturn buttons. This mapping was checked on a real receiver
+with the pad monitor sample:
 
 | Command | PS4 button sent | Keyboard key |
 |---|---|---|
-| `A` / `B` / `C` | Cross / Circle / R1 | Z / X / C |
-| `X` / `Y` / `Z` | Square / Triangle / L1 | A / S / D |
-| `L` / `R` | L2 / R2 | Q / E |
+| `A` / `B` / `C` | Cross / Circle / R2 | Z / X / C |
+| `X` / `Y` / `Z` | Square / Triangle / L2 | A / S / D |
+| `L` / `R` | L1 / R1 | Q / E |
 | `START` | Options | Enter |
 | `HOME` | PS | H |
 | `UP` `DOWN` `LEFT` `RIGHT` | D-pad | arrows |

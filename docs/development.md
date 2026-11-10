@@ -58,4 +58,4 @@ The grammar lives in two places that must agree: `parse()` in `src/bridge.hpp` a
 - The adapter is fixed to `hci0`.
 - Only the PS4 controller is imitated. Xbox One or Switch Pro would need a different report format,
   and Switch Pro also needs a longer handshake.
-- Not yet confirmed against a real receiver. If you try it, please report what works.
+- Tested on one RB-SGA-027 receiver (Bluetooth name `ZXD_BT_HOST`): pairing and all Saturn buttons work.

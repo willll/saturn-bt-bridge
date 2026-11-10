@@ -110,7 +110,7 @@ static int l2_listen(uint16_t psm) {
   a.psm = htole16(psm);
   if (bind(s, (sockaddr*)&a, sizeof a) < 0) {
     perror("bind HID port");
-    fprintf(stderr, "Is bluetoothd running with '-P input'? See README.md.\n");
+    fprintf(stderr, "Is bluetoothd running with '-P input,hostname'? See README.md.\n");
     exit(1);
   }
   if (listen(s, 1) < 0) die("listen");

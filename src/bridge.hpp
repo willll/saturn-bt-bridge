@@ -14,9 +14,10 @@
 struct Bind { uint16_t code; uint8_t byte, mask; };
 inline const Bind MAP[] = {
   // keyboard: Saturn-like layout, bottom row Z X C, top row A S D
-  {KEY_Z, 7, 0x20},     {KEY_X, 7, 0x40},     {KEY_C, 8, 0x02},      // Cross, Circle, R1
-  {KEY_A, 7, 0x10},     {KEY_S, 7, 0x80},     {KEY_D, 8, 0x01},      // Square, Triangle, L1
-  {KEY_Q, 8, 0x04},     {KEY_E, 8, 0x08},                            // L2, R2
+  // Saturn C/Z/L/R arrive from PS4 R2/L2/L1/R1: checked on a real RB-SGA-027 receiver
+  {KEY_Z, 7, 0x20},     {KEY_X, 7, 0x40},     {KEY_C, 8, 0x08},      // Cross, Circle, R2
+  {KEY_A, 7, 0x10},     {KEY_S, 7, 0x80},     {KEY_D, 8, 0x04},      // Square, Triangle, L2
+  {KEY_Q, 8, 0x01},     {KEY_E, 8, 0x02},                            // L1, R1
   {KEY_ENTER, 8, 0x20}, {KEY_BACKSPACE, 8, 0x10}, {KEY_H, 9, 0x01},  // Options, Share, PS
   // gamepad
   {BTN_SOUTH, 7, 0x20}, {BTN_EAST, 7, 0x40},   {BTN_WEST, 7, 0x10},  {BTN_NORTH, 7, 0x80},

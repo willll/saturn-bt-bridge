@@ -8,5 +8,5 @@ A real Saturn is connected to this PC through a Bluetooth receiver. Use the `sat
 
 You cannot see the screen. Ask the user what it shows when the next step depends on it.
 
-Button names are a guess at the receiver's mapping (A=Cross, B=Circle, C=R1, X=Square, Y=Triangle,
-Z=L1, L=L2, R=R2, START=Options). If a button does the wrong thing, tell the user.
+Button names match the Saturn buttons (checked on the real receiver: A=Cross, B=Circle, C=R2, X=Square,
+Y=Triangle, Z=L2, L=L1, R=R1, START=Options). If a button does the wrong thing, tell the user.

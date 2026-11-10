@@ -45,7 +45,7 @@ static void test_report() {
   assert(msg[8] == 0x08 && msg[9] == 0 && msg[10] == 0);  // hat released, nothing pressed
   assert(crc_ok(msg, sizeof msg));
 
-  down[KEY_UP] = down[KEY_RIGHT] = down[KEY_Z] = down[KEY_Q] = true;
+  down[KEY_UP] = down[KEY_RIGHT] = down[KEY_Z] = down[KEY_D] = true;
   build_report(msg, down, 0, 0, 3);
   assert(msg[8] == (0x20 | 1));                 // Cross + hat up-right
   assert(msg[9] == 0x04 && msg[11] == 0xFF);    // L2 bit and analog L2
