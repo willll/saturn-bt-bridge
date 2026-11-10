@@ -199,3 +199,8 @@ sudo systemctl revert bluetooth
 sudo systemctl restart bluetooth
 bluetoothctl system-alias "$(hostname)"
 ```
+
+## License
+
+[MIT](LICENSE). The pad pictures in `samples/saturn-pad-monitor/images` come from
+[SaturnRingLib](https://github.com/ReyeMe/SaturnRingLib), also MIT (see the sample's README).
