@@ -3,6 +3,7 @@
 // Based on the SaturnRingLib "Input - Gamepad" sample.
 #include <srl.hpp>
 #include <srl_log.hpp>
+#include "pad_images.hpp"
 
 // Using to shorten names for Vector and HighColor
 using namespace SRL::Types;
@@ -47,20 +48,20 @@ static const PadButton Buttons[] = {
     {Digital::Button::Z, "Z", InputButton, Vector3D(80, -30, 500), Angle::FromDegrees(0)},
 };
 
-// Palette for background gamepad
-int16_t LoadGamepadPalette(SRL::Bitmap::BitmapInfo* bitmap)
+// Loads the gamepad palette into a free color RAM bank. Returns the bank, or -1
+int16_t LoadGamepadPalette(SRL::CRAM::TextureColorMode mode)
 {
     // Get free CRAM bank
-    int32_t id = SRL::CRAM::GetFreeBank(bitmap->ColorMode);
+    int32_t id = SRL::CRAM::GetFreeBank(mode);
 
     if (id >= 0)
     {
-        SRL::CRAM::Palette palette(bitmap->ColorMode, id);
+        SRL::CRAM::Palette palette(mode, id);
 
-        if (palette.Load((HighColor*)bitmap->Palette->Colors, bitmap->Palette->Count) >= 0)
+        if (palette.Load((HighColor*)GamepadPalette, GamepadColors) >= 0)
         {
             // Mark bank as in use
-            SRL::CRAM::SetBankUsedState(id, bitmap->ColorMode, true);
+            SRL::CRAM::SetBankUsedState(id, mode, true);
             return id;
         }
     }
@@ -69,24 +70,22 @@ int16_t LoadGamepadPalette(SRL::Bitmap::BitmapInfo* bitmap)
     return -1;
 }
 
-// Load sample graphics
+// Load sample graphics, in the order of the identifiers above.
+// They are built into the program (make_images.py): sent over the DevCart there is no CD to read files from.
 void LoadGraphics()
 {
-    SRL::Bitmap::TGA* background = new SRL::Bitmap::TGA("GAMEPAD.TGA");
-    SRL::VDP1::TryLoadTexture(background, LoadGamepadPalette);
-    delete background;
+    using TextureColorMode = SRL::CRAM::TextureColorMode;
+    static_assert(GamepadColors > 64 && GamepadColors <= 128, "the pad picture is a 128-color image");
+    const int16_t bank = LoadGamepadPalette(TextureColorMode::Paletted128);
 
-    SRL::Bitmap::TGA* wire = new SRL::Bitmap::TGA("WIRE.TGA");
-    SRL::VDP1::TryLoadTexture(wire);
-    delete wire;
+    if (bank >= 0)
+    {
+        SRL::VDP1::TryLoadTexture(GamepadWidth, GamepadHeight, TextureColorMode::Paletted128, bank, (void*)GamepadPixels);
+    }
 
-    SRL::Bitmap::TGA* arrow = new SRL::Bitmap::TGA("ARROW.TGA");
-    SRL::VDP1::TryLoadTexture(arrow);
-    delete arrow;
-
-    SRL::Bitmap::TGA* button = new SRL::Bitmap::TGA("BUTTON.TGA");
-    SRL::VDP1::TryLoadTexture(button);
-    delete button;
+    SRL::VDP1::TryLoadTexture(WireWidth, WireHeight, TextureColorMode::RGB555, 0, (void*)WirePixels);
+    SRL::VDP1::TryLoadTexture(ArrowWidth, ArrowHeight, TextureColorMode::RGB555, 0, (void*)ArrowPixels);
+    SRL::VDP1::TryLoadTexture(ButtonWidth, ButtonHeight, TextureColorMode::RGB555, 0, (void*)ButtonPixels);
 }
 
 // Main program entry

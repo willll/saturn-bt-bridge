@@ -27,6 +27,13 @@ docker run --rm --entrypoint "" -u $(id -u):$(id -g) \
 
 The program is `cd/data/0.bin`; the disc image is in `BuildDrop/`.
 
+The pad pictures are built into the program (`src/pad_images.hpp`), because a program sent over the DevCart
+has no CD to load files from. After changing a picture in `images/`, regenerate the header (needs Pillow):
+
+```sh
+python3 make_images.py
+```
+
 ## Run on a Saturn with the USB DevCart
 
 From this folder:
@@ -58,6 +65,19 @@ Button names are the same as the bridge commands: `A B C X Y Z L R START UP DOWN
 Keep `ftx -c` running while the sample runs: if nothing reads the DevCart, its USB buffer can fill up
 and the sample pauses until it is read.
 
+## Press every button from the PC
+
+With `saturn_bt` connected, `cycle_buttons.sh` presses each Saturn button in turn and prints its name,
+so you can watch it light up on screen and appear in the `ftx -c` log:
+
+```sh
+./cycle_buttons.sh              # one round, 500 ms per button
+./cycle_buttons.sh 1000 0       # 1 s per button, until Ctrl+C
+```
+
+Arguments: hold time in ms (default 500), number of rounds (default 1, `0` = forever).
+It stops when `saturn_bt` disconnects. `HOME` is left out: what the receiver does with it is not known.
+
 ## Run in an emulator
 
 ```sh
@@ -68,5 +88,5 @@ The screen works the same. Without a DevCart the sample shows `DevCart: not foun
 
 ## Credits
 
-The graphics in `cd/data` come from SaturnRingLib (MIT License,
+The pictures in `images/` come from SaturnRingLib's "Input - Gamepad" sample (MIT License,
 Copyright (c) 2026 ReyeMe, robertoduarte, 7shades, willll, nemesis-saturn, jae686).
