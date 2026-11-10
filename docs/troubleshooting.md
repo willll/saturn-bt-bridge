@@ -29,8 +29,13 @@ The Saturn is off, the receiver is not plugged in, or it is out of range. Fix th
 If it still fails, pair again ([README](../README.md#first-time-pair)).
 
 **`Disconnected.` while playing**
-Turning off or resetting the Saturn drops the link. With `-m`, `saturn_bt` then exits: run it again.
+Turning off or resetting the Saturn drops the link. With `-m`, `saturn_bt` then exits: run it again,
+or use the [service](../README.md#or-keep-it-connected-with-a-service-no-sudo-afterwards), which does it for you.
 Without `-m` it waits, but the receiver does not come back by itself: restart with `-m`.
+
+**The service never connects**
+`journalctl -u saturn-bt@<MAC> -f` shows each attempt. Check the address in the service name
+(`bluetoothctl devices | grep ZXD_BT_HOST`), and that no other `saturn_bt` is running (`pgrep -a saturn_bt`).
 
 ## The receiver does not find or pair with the PC
 
@@ -73,7 +78,12 @@ some games only read the pad on certain screens.
 - VS Code: open the repo folder, open `.vscode/mcp.json`, click **Start** above `saturn`, and use Agent mode.
 
 **`saturn_bt is not running`**
-Start `sudo ./build/saturn_bt` yourself. The agent can't, because it needs root.
+Start `sudo ./build/saturn_bt -m <MAC>` yourself, or the service: `systemctl start saturn-bt@<MAC>`.
+The agent can't start it by hand, because that needs root. With the service, this message can also
+appear for a few seconds between two connection attempts.
+
+**`Not sent. Connecting to the receiver. Is the Saturn on?`**
+`saturn_bt -m` (or the service) is trying to reach the receiver. Turn the Saturn on, with the receiver plugged in.
 
 **`Not sent. Visible as 'Wireless Controller'...`**
 `saturn_bt` runs but the receiver is not connected. Restart it with `-m <receiver MAC>`,

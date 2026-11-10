@@ -110,6 +110,37 @@ Run the same command again. Commands sent while disconnected are dropped, not qu
 If it fails with `connect to receiver: ...`, the Saturn is off or the receiver is not plugged in;
 if it keeps failing, pair again.
 
+### Or: keep it connected with a service (no sudo afterwards)
+
+A systemd service runs `saturn_bt -m <MAC>` in the background and restarts it 5 seconds after it exits.
+Turn the Saturn on and it connects by itself within about 10 seconds; turn it off and the service keeps
+retrying quietly. Agents and scripts work as usual, and nobody has to type `sudo` again.
+
+Install once, after the first pairing:
+```sh
+sudo cmake --install build                                  # /usr/local/bin/saturn_bt + the service file
+sudo systemctl daemon-reload
+sudo systemctl enable --now saturn-bt@00:90:E1:6B:0E:52     # your receiver's address
+```
+
+Optional: let your desktop user start, stop and restart it without `sudo`:
+```sh
+sudo cp systemd/50-saturn-bt.rules /etc/polkit-1/rules.d/
+```
+
+Then:
+```sh
+systemctl status saturn-bt@00:90:E1:6B:0E:52               # running? connected?
+journalctl -u saturn-bt@00:90:E1:6B:0E:52 -f               # its messages
+systemctl stop saturn-bt@00:90:E1:6B:0E:52                 # release the receiver (until next boot)
+systemctl start saturn-bt@00:90:E1:6B:0E:52
+```
+
+- Stop the service before pairing a receiver again or running `./build/saturn_bt` by hand.
+- After rebuilding, run `sudo cmake --install build` and `systemctl restart saturn-bt@...` again.
+- The service runs the installed copy in `/usr/local/bin`, not `./build/saturn_bt`, because it runs as root
+  and a program in your home folder could be replaced by any of your programs.
+
 ### Options
 
 | Option | Effect |
@@ -161,6 +192,8 @@ Full command reference: [docs/commands.md](docs/commands.md).
 ## Undo
 
 ```sh
+sudo systemctl disable --now saturn-bt@00:90:E1:6B:0E:52     # your receiver's address
+sudo rm /usr/local/bin/saturn_bt /usr/local/lib/systemd/system/saturn-bt@.service /etc/polkit-1/rules.d/50-saturn-bt.rules
 sudo systemctl revert bluetooth
 # remove the Class/DeviceID lines from /etc/bluetooth/main.conf
 sudo systemctl restart bluetooth

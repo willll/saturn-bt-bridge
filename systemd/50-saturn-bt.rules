@@ -1,0 +1,10 @@
+// Optional: lets the logged-in desktop user start, stop and restart saturn-bt@ services without sudo.
+// Install: sudo cp systemd/50-saturn-bt.rules /etc/polkit-1/rules.d/
+polkit.addRule(function (action, subject) {
+  if (action.id == "org.freedesktop.systemd1.manage-units" &&
+      action.lookup("unit").indexOf("saturn-bt@") == 0 &&
+      ["start", "stop", "restart"].indexOf(action.lookup("verb")) >= 0 &&
+      subject.local && subject.active) {
+    return polkit.Result.YES;
+  }
+});

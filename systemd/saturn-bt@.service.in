@@ -1,0 +1,20 @@
+# Keeps the Saturn receiver connected: saturn-bt@<receiver MAC>.service
+# Install with "sudo cmake --install build", then:
+#   sudo systemctl enable --now saturn-bt@00:90:E1:6B:0E:52
+[Unit]
+Description=Saturn Bluetooth bridge to receiver %I
+After=bluetooth.service
+Requires=bluetooth.service
+# Restarting bluetooth drops our HID profile registration: restart with it
+PartOf=bluetooth.service
+# Never give up: the Saturn may stay off for hours
+StartLimitIntervalSec=0
+
+[Service]
+# Exits when the receiver is unreachable or the link drops; try again shortly
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/saturn_bt -m %I
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=bluetooth.target

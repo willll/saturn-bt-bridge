@@ -215,6 +215,7 @@ int main(int argc, char** argv) {
       fprintf(stderr, "bad MAC address: %s\n", mac);
       return 1;
     }
+    status("Connecting to the receiver. Is the Saturn on?");  // replaces a stale "Connected." from a previous run
     int ctrl = l2_connect(a, PSM_CTRL), intr = l2_connect(a, PSM_INTR);
     status("Connected.");
     run(ctrl, intr, ev, fifo);

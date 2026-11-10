@@ -25,3 +25,9 @@ if(Python3_FOUND)
   add_test(NAME mcp COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_saturn_mcp.py)
   set_tests_properties(mcp PROPERTIES ENVIRONMENT PYTHONDONTWRITEBYTECODE=1)
 endif()
+
+# sudo cmake --install build: the program to /usr/local/bin, the service to where systemd finds it
+include(GNUInstallDirs)
+install(TARGETS saturn_bt RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+configure_file(systemd/saturn-bt@.service.in saturn-bt@.service @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/saturn-bt@.service DESTINATION lib/systemd/system)

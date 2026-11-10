@@ -51,7 +51,7 @@ def status():
         os.close(os.open(FIFO, os.O_WRONLY | os.O_NONBLOCK))
     except OSError as e:
         if e.errno in (errno.ENOENT, errno.ENXIO):
-            return "saturn_bt is not running. Ask the user to start it (see README.md)."
+            return "saturn_bt is not running. Ask the user to start it or its service (see README.md)."
         raise
     try:
         with open(STATUS) as f:

@@ -110,6 +110,8 @@ so old commands never fire by surprise.
 | `src/bridge.hpp` | Logic that does no I/O: button tables, command parser, report builder, control replies, CRC |
 | `src/saturn_bt.cpp` | Bluetooth (BlueZ D-Bus + L2CAP sockets), input device, pipe, main loop |
 | `src/saturn_mcp.py` | MCP server: `status` and `send_commands` tools |
+| `systemd/saturn-bt@.service.in` | Service that keeps `saturn_bt -m <MAC>` running; installed by `cmake --install` |
+| `systemd/50-saturn-bt.rules` | Optional polkit rule: the desktop user may start/stop the service without sudo |
 | `tests/test_bridge.cpp` | Tests for `bridge.hpp` |
 | `tests/test_saturn_mcp.py` | Tests for the MCP server |
 
