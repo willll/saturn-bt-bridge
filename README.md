@@ -56,7 +56,7 @@ Plug the receiver into the Saturn and turn the Saturn on. The receiver is named 
 Do this once. All steps take about a minute.
 
 1. Close **Settings → Bluetooth** if it is open: it keeps the PC scanning and uses its own pairing agent.
-2. Terminal A: accept pairing without a PIN. Leave it open until step 7.
+2. Terminal A: accept pairing without a PIN. Leave it open until step 8.
    ```sh
    bluetoothctl
    agent NoInputNoOutput
@@ -69,7 +69,7 @@ Do this once. All steps take about a minute.
    It prints `Visible as 'Wireless Controller'. Hold the pairing button on the Saturn receiver.`
 4. Terminal C: make the PC look exactly like a PS4 pad in pairing mode.
    ```sh
-   systemctl --user stop wireplumber obex      # PC sound stops until step 7
+   systemctl --user stop wireplumber obex      # PC sound stops until step 8
    sudo btmgmt discov limited 180              # visible for 3 minutes, like a pad in pairing mode
    bluetoothctl show | grep Class              # must be 0x00002508
    ```
@@ -78,11 +78,19 @@ Do this once. All steps take about a minute.
 5. Within those 3 minutes, **hold** the receiver's pairing button until its LED blinks fast.
    A short press is not enough. If `bluetoothctl` asks to confirm, answer `yes`.
 6. Terminal B prints `Connected.` The Saturn now gets your input.
-7. In Terminal A, remember the receiver so you can reconnect without the pairing button,
+7. Get the receiver's address (its MAC). While it is connected, in any terminal:
+   ```sh
+   bluetoothctl devices Connected
+   ```
+   ```text
+   Device 00:90:E1:6B:0E:52 ZXD_BT_HOST
+   ```
+   The address is the `XX:XX:XX:XX:XX:XX` part before `ZXD_BT_HOST`. Each receiver has its own: write
+   yours down. Later, even when it is not connected, `bluetoothctl devices | grep ZXD_BT_HOST` shows it.
+8. In Terminal A, remember the receiver so you can reconnect without the pairing button,
    then quit and turn sound back on:
    ```sh
-   devices                                     # find ZXD_BT_HOST and its address
-   trust 00:90:E1:6B:0E:52                     # use your receiver's address
+   trust 00:90:E1:6B:0E:52                     # your receiver's address
    quit
    ```
    ```sh
@@ -92,7 +100,7 @@ Do this once. All steps take about a minute.
 ### After that: reconnect
 
 ```sh
-sudo ./build/saturn_bt -m 00:90:E1:6B:0E:52    # your receiver's address
+sudo ./build/saturn_bt -m 00:90:E1:6B:0E:52    # your receiver's address, from step 7
 ```
 
 No pairing button, no `bluetoothctl`, sound can stay on. It prints `Connected.` within a few seconds.
