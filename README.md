@@ -1,5 +1,7 @@
 # saturn_bt
 
+[![CI](https://github.com/willll/saturn-bt-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/willll/saturn-bt-bridge/actions/workflows/ci.yml)
+
 Turns a Linux PC into a Bluetooth controller for the **Retro-Bit SEGA Saturn Bluetooth receiver** (RB-SGA-027).
 The receiver only accepts PS4, Xbox One and Switch controllers, so the program pretends to be a **PS4 DualShock 4**.
 Your keyboard or USB gamepad drives it, and so can scripts or an AI agent (Claude Code, Copilot) through text commands.
