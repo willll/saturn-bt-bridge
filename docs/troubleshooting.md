@@ -22,6 +22,16 @@ change `/org/bluez/hci0` in `src/saturn_bt.cpp`.
 **`/dev/input/...: Permission denied` or `No such file or directory`**
 Use `sudo`, and pick the device from `ls -l /dev/input/by-id/`. `-i` is optional.
 
+## saturn_bt -m fails or the link drops
+
+**`connect to receiver: Host is down`** (or `Connection refused`, `timed out`)
+The Saturn is off, the receiver is not plugged in, or it is out of range. Fix that and run the command again.
+If it still fails, pair again ([README](../README.md#first-time-pair)).
+
+**`Disconnected.` while playing**
+Turning off or resetting the Saturn drops the link. With `-m`, `saturn_bt` then exits: run it again.
+Without `-m` it waits, but the receiver does not come back by itself: restart with `-m`.
+
 ## The receiver does not find or pair with the PC
 
 1. Check the PC looks like a gamepad:
@@ -33,7 +43,8 @@ Use `sudo`, and pick the device from `ls -l /dev/input/by-id/`. `-i` is optional
    the receiver ignores the PC. If the class is wrong, check `Class = 0x000508` is under `[General]` in `/etc/bluetooth/main.conf`
    and restart `bluetooth`. If it ends in `10c` (laptop), BlueZ's `hostname` plugin overwrote it:
    `bluetoothd` must run with `-P input,hostname`.
-2. Keep the `bluetoothctl` agent open (`agent NoInputNoOutput`, `default-agent`) and answer `yes` if asked.
+2. Close **Settings → Bluetooth**: while open it scans nonstop and uses its own agent.
+   Keep the `bluetoothctl` agent open (`agent NoInputNoOutput`, `default-agent`) and answer `yes` if asked.
 3. Plug the receiver into a **powered-on** Saturn, then **hold** its pairing button until the LED blinks fast,
    within the 3 minutes of `btmgmt discov limited`. A short press is not enough. Stay within a few meters.
 4. If the receiver was paired with this PC before, remove the old pairing on the PC:
@@ -65,8 +76,8 @@ some games only read the pad on certain screens.
 Start `sudo ./build/saturn_bt` yourself. The agent can't, because it needs root.
 
 **`Not sent. Visible as 'Wireless Controller'...`**
-`saturn_bt` runs but the receiver is not connected. Press the receiver's pairing button,
-or restart with `-m <receiver MAC>`.
+`saturn_bt` runs but the receiver is not connected. Restart it with `-m <receiver MAC>`,
+or pair again ([README](../README.md#connecting)).
 
 **Commands are queued but nothing happens on screen**
 Check the game is on a screen that reacts to input. The agent cannot see the TV, so tell it what is shown.

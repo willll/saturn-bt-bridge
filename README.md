@@ -22,7 +22,8 @@ ctest --test-dir build --output-on-failure   # tests, no Bluetooth or root neede
 
 ## One-time BlueZ setup
 
-1. In `/etc/bluetooth/main.conf`, under `[General]`, make the PC look like a DS4:
+1. In `/etc/bluetooth/main.conf`, under `[General]`, make the PC look like a DS4. The file usually already
+   has `#Class = ...` and `#DeviceID = ...` lines: remove the `#` and change the values.
 
    ```ini
    Class = 0x000508
@@ -41,55 +42,90 @@ ctest --test-dir build --output-on-failure   # tests, no Bluetooth or root neede
    ```
    ```sh
    sudo systemctl restart bluetooth
+   pgrep -a bluetoothd       # must end with -P input,hostname
    ```
 
    ⚠ While the plugin is off, Bluetooth keyboards, mice and gamepads **on this PC** stop working.
 
-## Pairing
+## Connecting
 
-1. In a second terminal, accept pairing without a PIN, and leave it open:
+Plug the receiver into the Saturn and turn the Saturn on. The receiver is named `ZXD_BT_HOST` on Bluetooth.
+
+### First time: pair
+
+Do this once. All steps take about a minute.
+
+1. Close **Settings → Bluetooth** if it is open: it keeps the PC scanning and uses its own pairing agent.
+2. Terminal A: accept pairing without a PIN. Leave it open until step 7.
    ```sh
    bluetoothctl
    agent NoInputNoOutput
    default-agent
    ```
-2. Find your input device: `ls -l /dev/input/by-id/` (keyboards end in `-event-kbd`, gamepads in `-event-joystick`).
-3. Run:
+3. Terminal B: start the bridge. Leave it running.
    ```sh
-   sudo ./build/saturn_bt -i /dev/input/by-id/usb-XXXX-event-kbd
+   sudo ./build/saturn_bt
    ```
-   `-i` is optional: leave it out to drive the Saturn only from an AI agent or script.
-4. Make the PC look exactly like a PS4 pad in pairing mode. The receiver ignores the PC while its class
-   has extra bits from the desktop's sound and file-sharing services (`0x7c2508` instead of `0x002508`):
+   It prints `Visible as 'Wireless Controller'. Hold the pairing button on the Saturn receiver.`
+4. Terminal C: make the PC look exactly like a PS4 pad in pairing mode.
    ```sh
-   systemctl --user stop wireplumber obex      # PC sound stops until you start them again
+   systemctl --user stop wireplumber obex      # PC sound stops until step 7
    sudo btmgmt discov limited 180              # visible for 3 minutes, like a pad in pairing mode
    bluetoothctl show | grep Class              # must be 0x00002508
    ```
-5. Within those 3 minutes, plug the receiver into the powered-on Saturn and hold its pairing button
-   until the LED blinks fast. If `bluetoothctl` asks you to confirm, answer `yes`.
-6. Once it says `Connected.`, write down the receiver's address (`devices` in bluetoothctl; it is named
-   `ZXD_BT_HOST`), then `trust <MAC>`. Restart sound with `systemctl --user start wireplumber obex`.
+   The receiver ignores the PC while the class has extra bits (e.g. `0x7c2508`): they come from
+   the sound and file-sharing services stopped above.
+5. Within those 3 minutes, **hold** the receiver's pairing button until its LED blinks fast.
+   A short press is not enough. If `bluetoothctl` asks to confirm, answer `yes`.
+6. Terminal B prints `Connected.` The Saturn now gets your input.
+7. In Terminal A, remember the receiver so you can reconnect without the pairing button,
+   then quit and turn sound back on:
+   ```sh
+   devices                                     # find ZXD_BT_HOST and its address
+   trust 00:90:E1:6B:0E:52                     # use your receiver's address
+   quit
+   ```
+   ```sh
+   systemctl --user start wireplumber obex
+   ```
 
-Next time, either repeat steps 3–5, or connect directly:
+### After that: reconnect
+
 ```sh
-sudo ./build/saturn_bt -m AA:BB:CC:DD:EE:FF
+sudo ./build/saturn_bt -m 00:90:E1:6B:0E:52    # your receiver's address
 ```
+
+No pairing button, no `bluetoothctl`, sound can stay on. It prints `Connected.` within a few seconds.
+
+With `-m`, `saturn_bt` exits when the link drops (Saturn turned off or reset, receiver unplugged).
+Run the same command again. Commands sent while disconnected are dropped, not queued.
+If it fails with `connect to receiver: ...`, the Saturn is off or the receiver is not plugged in;
+if it keeps failing, pair again.
+
+### Options
+
+| Option | Effect |
+|---|---|
+| `-m MAC` | connect to a receiver paired before, instead of waiting for its pairing button |
+| `-i /dev/input/by-id/...-event-kbd` | also drive the Saturn from this keyboard or gamepad (`ls -l /dev/input/by-id/`; gamepads end in `-event-joystick`) |
+
+Without `-i`, only AI agents and scripts drive the Saturn.
 
 ## Controls
 
-| Keyboard | Gamepad | Sent as (PS4) |
-|---|---|---|
-| Arrows | D-pad | D-pad |
-| Z / X / C | South / East / R2 | Cross / Circle / R2 |
-| A / S / D | West / North / L2 | Square / Triangle / L2 |
-| Q / E | L1 / R1 | L1 / R1 |
-| Enter | Start | Options |
-| Backspace | Select | Share |
-| H | Home | PS |
+| Keyboard | Gamepad | Sent as (PS4) | Saturn |
+|---|---|---|---|
+| Arrows | D-pad | D-pad | D-pad |
+| Z / X / C | South / East / R2 | Cross / Circle / R2 | A / B / C |
+| A / S / D | West / North / L2 | Square / Triangle / L2 | X / Y / Z |
+| Q / E | L1 / R1 | L1 / R1 | L / R |
+| Enter | Start | Options | START |
+| Backspace | Select | Share | not tested |
+| H | Home | PS | not tested |
 
-Which PS4 button becomes which Saturn button is decided by the receiver, and the manual does not document it.
-Test in-game and [change the mapping](docs/development.md#changing-the-button-mapping) if needed.
+The receiver decides which PS4 button becomes which Saturn button. The Saturn column was checked on a real
+receiver with the [pad monitor sample](samples/saturn-pad-monitor/README.md); if yours differs,
+[change the mapping](docs/development.md#changing-the-button-mapping).
 Keys still reach the terminal while it runs; that's harmless.
 
 ## AI agents (MCP)
@@ -100,7 +136,7 @@ It is already registered for this folder:
 - **Claude Code**: `.mcp.json`. Run `claude` here and approve the `saturn` server once.
 - **VS Code Copilot**: `.vscode/mcp.json`. Open this folder, start the `saturn` server, use Agent mode.
 
-Start `saturn_bt` yourself first (it needs root); the MCP server runs as your normal user.
+Start `saturn_bt` yourself first and wait for `Connected.` (it needs root); the MCP server runs as your normal user.
 Then ask, for example: "press Start, wait a second, then choose the second menu item".
 
 ## Commands (scripts)
