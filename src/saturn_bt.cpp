@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
   }
 
   int lc = l2_listen(PSM_CTRL), li = l2_listen(PSM_INTR);
-  status("Visible as 'Wireless Controller'. Press the pairing button on the Saturn receiver.");
+  status("Visible as 'Wireless Controller'. Hold the pairing button on the Saturn receiver.");
   for (;;) {
     int ctrl = accept(lc, nullptr, nullptr);
     if (ctrl < 0) die("accept");

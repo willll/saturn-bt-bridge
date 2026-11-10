@@ -34,13 +34,15 @@ Use `sudo`, and pick the device from `ls -l /dev/input/by-id/`. `-i` is optional
    and restart `bluetooth`. If it ends in `10c` (laptop), BlueZ's `hostname` plugin overwrote it:
    `bluetoothd` must run with `-P input,hostname`.
 2. Keep the `bluetoothctl` agent open (`agent NoInputNoOutput`, `default-agent`) and answer `yes` if asked.
-3. Plug the receiver into a **powered-on** Saturn, then press its pairing button. Stay within a few meters.
+3. Plug the receiver into a **powered-on** Saturn, then **hold** its pairing button until the LED blinks fast,
+   within the 3 minutes of `btmgmt discov limited`. A short press is not enough. Stay within a few meters.
 4. If the receiver was paired with this PC before, remove the old pairing on the PC:
    `bluetoothctl remove <MAC>`, then pair again.
 5. Watch what happens:
    ```sh
    sudo btmon
    ```
+   To save it to a file, use `sudo stdbuf -oL btmon | tee btmon.txt`: without `stdbuf` the end is lost on Ctrl+C.
    If the receiver connects and then disconnects right away, it is probably rejecting the fake PS4 pad.
    Open an issue with the `btmon` output.
 

@@ -37,19 +37,22 @@ The receiver decides whether a device is a PS4 controller from what it can see o
 
 | What | How it is set |
 |---|---|
-| Device class "gamepad" (`0x000508`) | `Class` in `/etc/bluetooth/main.conf` |
+| Device class exactly `0x002508` (gamepad, limited discoverable, no service bits) | `Class` in `/etc/bluetooth/main.conf`, `btmgmt discov limited`, sound and file-sharing services stopped while pairing |
 | Sony vendor/product ID (`054C:05C4`) | `DeviceID` in `/etc/bluetooth/main.conf` |
 | Name "Wireless Controller" | adapter alias, set by `saturn_bt` at start |
 | HID service record | registered by `saturn_bt` through BlueZ's `ProfileManager1.RegisterProfile` |
 
 Bluetooth HID uses two L2CAP channels: **control** (PSM 17) and **interrupt** (PSM 19).
-BlueZ's own input plugin normally owns those ports, which is why `bluetoothd` must run with `-P input`.
+BlueZ's own input plugin normally owns those ports, which is why `bluetoothd` must run with `-P input,hostname`
+(the `hostname` plugin would otherwise replace the class with "laptop").
 
 ### Pairing and connecting
 
-- **Without `-m`**: the PC stays discoverable and waits. When you press the receiver's pairing button,
-  it finds "Wireless Controller", pairs, and opens both channels. After a disconnect, `saturn_bt` waits again.
-- **With `-m MAC`**: `saturn_bt` connects to an already paired receiver itself, like a real pad waking up.
+- **Without `-m`**: the PC stays discoverable and waits. When you hold the receiver's pairing button,
+  it searches, finds "Wireless Controller", and opens both channels. After a disconnect, `saturn_bt` waits again.
+  The tested receiver (`ZXD_BT_HOST`) skips Bluetooth pairing: no link key is stored, `Paired` stays `no`.
+- **With `-m MAC`**: `saturn_bt` connects to a receiver it has seen before, like a real pad waking up.
+  No pairing button, and the class does not matter, so sound can stay on.
 
 ### Control channel
 
