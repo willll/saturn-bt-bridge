@@ -6,6 +6,12 @@ Turns a Linux PC into a Bluetooth controller for the **Retro-Bit SEGA Saturn Blu
 The receiver only accepts PS4, Xbox One and Switch controllers, so the program pretends to be a **PS4 DualShock 4**.
 Your keyboard or USB gamepad drives it, and so can scripts or an AI agent (Claude Code, Copilot) through text commands.
 
+## Demo
+
+[![Pad monitor sample running on a SEGA Saturn, driven over Bluetooth from the PC](https://img.youtube.com/vi/vp2p2T6knnY/hqdefault.jpg)](https://youtu.be/vp2p2T6knnY)
+
+The [pad monitor sample](samples/saturn-pad-monitor/README.md) on a real Saturn, with every button pressed from the PC.
+
 ## Documentation
 
 - [How it works](docs/how-it-works.md): architecture, Bluetooth details, code map

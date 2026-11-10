@@ -9,6 +9,10 @@ should print `PRESSED A`. If it prints another button, fix the mapping
 
 Built with [SaturnRingLib](https://github.com/ReyeMe/SaturnRingLib); based on its "Input - Gamepad" sample.
 
+[![Pad monitor sample running on a SEGA Saturn, driven over Bluetooth from the PC](https://img.youtube.com/vi/vp2p2T6knnY/hqdefault.jpg)](https://youtu.be/vp2p2T6knnY)
+
+*Running on a real Saturn, buttons sent from the PC with `cycle_buttons.sh` ([video](https://youtu.be/vp2p2T6knnY)).*
+
 ## Build
 
 You need SaturnRingLib and its SH-2 compiler.
